@@ -18,10 +18,18 @@ steps:
 - script: |
     ls -al
 - script: |
-    curl -sL https://github.com/buildpack/pack/releases/download/v0.2.1/pack-v0.2.1-linux.tgz | tar zxf -
-    mv pack /bin
+    mvn clean package -DskipTests
+    jarfile=`find ./target -name *.jar`
+    echo FROM java:8 \
+    WORKDIR /app \
+    COPY . /app \
+    ADD $jarfile /app/demo.jar \
+    EXPOSE 8080 \
+    ENTRYPOINT ["java","-jar","/app/demo.jar"] \
+    > Dockerfile
     docker login -u normanch -p "${pswd}"
-    pack build --builder cloudfoundry/cnb:bionic --publish normanch/spring-demo-app
+    docker push normanch/spring-demo-test
+    docker run --restart=always --name demo -p 8080:8080 normanch/spring-demo-test
   env:
     pswd: $(dockerPassword)
 - script: |
