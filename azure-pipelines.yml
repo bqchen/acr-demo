@@ -32,12 +32,12 @@ steps:
     > Dockerfile
 - script: |
     docker login -u normanch -p "${pswd}"
+  env:
+    pswd: $(dockerPassword)
 - script: |
     docker build -t normanch/spring-demo-test
     docker push normanch/spring-demo-test
 - script: |
     docker run --restart=always --name demo -p 8080:8080 normanch/spring-demo-test
-  env:
-    pswd: $(dockerPassword)
 - script: |
     ls -al
