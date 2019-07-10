@@ -23,7 +23,6 @@ steps:
     ls -al
 - script: |
     jarfile=`find ./target -name *.jar`
-- script: |
     cat <<EOF > Dockerfile
     FROM java:8
     WORKDIR /app
