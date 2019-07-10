@@ -21,23 +21,24 @@ steps:
     mvn clean package -DskipTests
 - script: |
     ls -al
+- script: |
     jarfile=`find ./target -name *.jar`
 - script: |
-    echo FROM java:8 \
-    WORKDIR /app \
-    COPY . /app \
-    ADD $jarfile /app/demo.jar \
-    EXPOSE 8080 \
-    ENTRYPOINT ["java","-jar","/app/demo.jar"] \
-    > Dockerfile
+    cat <<EOF > Dockerfile
+    FROM java:8
+    WORKDIR /app
+    COPY . /app
+    ADD $jarfile /app/demo.jar
+    EXPOSE 8080
+    ENTRYPOINT ["java","-jar","/app/demo.jar"]
+    EOF
 - script: |
     docker login -u normanch -p "${pswd}"
   env:
-    pswd: $(dockerPassword)
+      pswd: $(dockerPassword)
 - script: |
     docker build -t normanch/spring-demo-test .
+- script: |
     docker push normanch/spring-demo-test:latest
 - script: |
     docker run --restart=always --name demo -p 8080:8080 normanch/spring-demo-test
-- script: |
-    ls -al
